@@ -9,6 +9,15 @@ from datetime import datetime
 class PersonaFormulario(forms.ModelForm):
     imagen_recortada = forms.CharField(widget=forms.HiddenInput(), required=False)
 
+    fecha_nacimiento = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={'type': 'date', 'class': 'form-control'},
+            format='%Y-%m-%d'
+        ),
+        input_formats=['%Y-%m-%d']
+    )
+
     class Meta:
         model = Persona
         fields = ['nombres', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento', 'alias', 'fotografia']
@@ -17,8 +26,12 @@ class PersonaFormulario(forms.ModelForm):
             'apellido_paterno': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido_materno': forms.TextInput(attrs={'class': 'form-control'}),
             'alias': forms.TextInput(attrs={'class': 'form-control'}),
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.fecha_nacimiento:
+            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')
 
     def save(self, commit=True):
         instancia = super().save(commit=False)
