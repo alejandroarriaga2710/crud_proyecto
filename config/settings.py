@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,8 @@ SECRET_KEY = 'django-insecure-ftbuf%qqp85@9@%o%6uc3#%ic$711im*82800%#v3qw=+lyrzx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['alejandroarriaga27.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ["https://alejandroarriaga27.pythonanywhere.com"]
 
 
 # Application definition
@@ -76,11 +78,11 @@ ASGI_APPLICATION = 'crud_proyecto.asgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "crud_db",
-        "USER": "root",
-        "PASSWORD": "root",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "NAME": os.environ.get("MYSQL_DB", "alejandroarriaga$crud_db"),
+        "USER": os.environ.get("MYSQL_USER", "alejandroarriaga"),
+        "PASSWORD": os.environ.get("MYSQL_PASSWORD", "arriaga525-"),
+        "HOST": os.environ.get("MYSQL_HOST", "alejandroarriaga27.mysql.pythonanywhere-services.com"),
+        "PORT": os.environ.get("MYSQL_PORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
             "init_command": "SET sql_mode='STRICT_ALL_TABLES'",
@@ -123,6 +125,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
