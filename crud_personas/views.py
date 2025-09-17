@@ -33,8 +33,6 @@ def _contexto_formularios(persona=None):
         DireccionFormsetCrear(prefix='direcciones'),
     )
 
-# -------- helpers para contar activos del POST (ignorando DELETE) --------
-
 def _correos_activos(formset):
     activos = []
     for f in formset.forms:
@@ -83,7 +81,6 @@ def _direcciones_activas(formset):
     return activos
 
 def _poner_error_minimo(formset, msg):
-    # agrega non_form_error al formset
     formset._non_form_errors = formset.error_class([msg])
 
 @transaction.atomic
@@ -209,10 +206,8 @@ def modal_persona_editar(request, persona_id):
             }, request=request)
             return JsonResponse({'ok': False, 'html': html})
 
-        # Guardar persona
         persona = formulario.save()
 
-        # BORRAR y RE-CREAR hijos según lo que venga en POST
         persona.correos.all().delete()
         persona.telefonos.all().delete()
         persona.direcciones.all().delete()
