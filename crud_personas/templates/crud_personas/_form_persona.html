@@ -1,0 +1,160 @@
+{% load static %}
+
+<div class="modal-header">
+  <h5 class="modal-title">{{ titulo_modal }}</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<form id="formPersona" method="post" action="{{ url_accion }}" enctype="multipart/form-data" class="modal-modern">
+  <div class="modal-body">
+    {% csrf_token %}
+    <div class="row g-4 perfil-row">
+      <div class="col-lg-3 d-flex flex-column align-items-center">
+        <div class="d-none">{{ formulario.fotografia }}</div>
+        {{ formulario.imagen_recortada }}
+        <div class="avatar-wrapper mb-2">
+          <img id="previewFoto"
+               src="{% if persona_obj and persona_obj.fotografia %}{{ persona_obj.fotografia.url }}{% else %}{% static 'crud_personas/img/avatar_dummy.svg' %}{% endif %}"
+               alt="avatar">
+        </div>
+        <div class="avatar-actions d-flex">
+          <label for="id_fotografia" class="btn btn-soft btn-icon">
+            <i class="bi bi-camera"></i><span>Cambiar</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="col-lg-9">
+        <div class="seccion-titulo"><i class="bi bi-person-badge"></i> Datos personales</div>
+        <div class="row g-3">
+          <div class="col-md-6">{{ formulario.nombres.label_tag }} {{ formulario.nombres }}</div>
+          <div class="col-md-6">{{ formulario.alias.label_tag }} {{ formulario.alias }}</div>
+          <div class="col-md-4">{{ formulario.apellido_paterno.label_tag }} {{ formulario.apellido_paterno }}</div>
+          <div class="col-md-4">{{ formulario.apellido_materno.label_tag }} {{ formulario.apellido_materno }}</div>
+          <div class="col-md-4">{{ formulario.fecha_nacimiento.label_tag }} {{ formulario.fecha_nacimiento }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="contenedorCropper" class="cropper-card d-none">
+      <div class="cropper-card-header">
+        <span><i class="bi bi-crop me-2"></i>Ajustar recorte</span>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-grad btn-sm" id="btnAplicarRecorte">
+            <i class="bi bi-check2"></i> Usar recorte
+          </button>
+          <button type="button" class="btn btn-soft btn-sm" id="btnCancelarRecorte">
+            <i class="bi bi-x-lg"></i> Cancelar
+          </button>
+        </div>
+      </div>
+      <div class="cropper-card-body">
+        <img id="imgCropper" class="img-fluid rounded border" alt="recorte">
+      </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-envelope-open me-2"></i>Correos</span>
+            <button type="button" class="btn btn-light btn-sm btn-icon js-agregar-form" data-target="#correosFormset">
+              <i class="bi bi-plus-lg"></i><span>Añadir</span>
+            </button>
+          </div>
+          <div class="card-body" id="correosFormset">
+            {{ formset_correos.management_form }}
+            {% if formset_correos.non_form_errors %}
+              <div class="text-help" id="errMinCorreosSrv">{{ formset_correos.non_form_errors|join:", " }}</div>
+            {% else %}
+              <div id="errMinCorreos" class="text-help d-none">Debes agregar al menos un correo.</div>
+            {% endif %}
+            {% for f in formset_correos %}
+              <div class="row g-2 align-items-center formset-item js-formset-item">
+                {{ f.id }}
+                <div class="col-10">{{ f.correo }}</div>
+                <div class="col-2 text-end">
+                  <button type="button" class="btn btn-outline-danger btn-sm js-remover-form"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-telephone me-2"></i>Teléfonos</span>
+            <button type="button" class="btn btn-light btn-sm btn-icon js-agregar-form" data-target="#telefonosFormset">
+              <i class="bi bi-plus-lg"></i><span>Añadir</span>
+            </button>
+          </div>
+          <div class="card-body" id="telefonosFormset">
+            {{ formset_telefonos.management_form }}
+            {% if formset_telefonos.non_form_errors %}
+              <div class="text-help" id="errMinTelefonosSrv">{{ formset_telefonos.non_form_errors|join:", " }}</div>
+            {% else %}
+              <div id="errMinTelefonos" class="text-help d-none">Debes agregar al menos un teléfono.</div>
+            {% endif %}
+            {% for f in formset_telefonos %}
+              <div class="row g-2 align-items-center formset-item js-formset-item">
+                {{ f.id }}
+                <div class="col-5">{{ f.etiqueta }}</div>
+                <div class="col-5">{{ f.numero }}</div>
+                <div class="col-2 text-end">
+                  <button type="button" class="btn btn-outline-danger btn-sm js-remover-form"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-geo-alt me-2"></i>Direcciones</span>
+            <button type="button" class="btn btn-light btn-sm btn-icon js-agregar-form" data-target="#direccionesFormset">
+              <i class="bi bi-plus-lg"></i><span>Añadir</span>
+            </button>
+          </div>
+          <div class="card-body" id="direccionesFormset">
+            {{ formset_direcciones.management_form }}
+            {% if formset_direcciones.non_form_errors %}
+              <div class="text-help" id="errMinDireccionesSrv">{{ formset_direcciones.non_form_errors|join:", " }}</div>
+            {% else %}
+              <div id="errMinDirecciones" class="text-help d-none">Debes agregar al menos una dirección.</div>
+            {% endif %}
+            {% for f in formset_direcciones %}
+              <div class="formset-item js-formset-item">
+                {{ f.id }}
+                {{ f.linea1.label_tag }} {{ f.linea1 }}
+                {{ f.linea2.label_tag }} {{ f.linea2 }}
+                <div class="row g-2">
+                  <div class="col-6">{{ f.ciudad.label_tag }} {{ f.ciudad }}</div>
+                  <div class="col-6">{{ f.estado.label_tag }} {{ f.estado }}</div>
+                </div>
+                <div class="row g-2">
+                  <div class="col-6">{{ f.cp.label_tag }} {{ f.cp }}</div>
+                  <div class="col-6">{{ f.pais.label_tag }} {{ f.pais }}</div>
+                </div>
+                <div class="text-end mt-2">
+                  <button type="button" class="btn btn-outline-danger btn-sm js-remover-form">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-soft" data-bs-dismiss="modal"><i class="bi bi-arrow-left"></i> Cerrar</button>
+    <button type="submit" class="btn btn-grad"><i class="bi bi-check2-circle"></i> Guardar</button>
+  </div>
+</form>

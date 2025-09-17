@@ -1,0 +1,22 @@
+{% load static %}
+<tr id="fila-{{ p.id }}">
+  <td>
+    <img src="{% if p.fotografia %}{{ p.fotografia.url }}{% else %}{% static 'crud_personas/img/avatar_dummy.svg' %}{% endif %}"
+         class="rounded-circle" style="width:40px;height:40px;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+  </td>
+  <td>
+    <div class="fw-semibold">{{ p.nombres }} {{ p.apellido_paterno }} {{ p.apellido_materno }}</div>
+    <div class="text-muted small">{{ p.fecha_nacimiento|date:"d/m/Y" }}</div>
+  </td>
+  <td><span class="badge badge-soft">{{ p.alias|default:"—" }}</span></td>
+  <td>{{ p.correos.count }}</td>
+  <td>{{ p.telefonos.count }}</td>
+  <td class="text-end">
+    <button class="btn btn-soft btn-sm js-abrir-modal" data-url="{% url 'crud_personas:modal_editar' p.id %}">
+      <i class="bi bi-pencil"></i> Editar
+    </button>
+    <button class="btn btn-outline-danger btn-sm js-abrir-modal" data-url="{% url 'crud_personas:modal_eliminar' p.id %}">
+      <i class="bi bi-trash"></i>
+    </button>
+  </td>
+</tr>
